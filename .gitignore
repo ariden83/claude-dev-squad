@@ -1,0 +1,37 @@
+# Fichiers de configuration sensibles
+.env
+backend/.env
+**/.env
+
+# Dossiers de backup
+backups/
+**/backups/
+
+# Dossiers de dépendances
+node_modules/
+**/node_modules/
+
+# Fichiers de logs
+*.log
+logs/
+**/logs/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers d'IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Fichiers de build
+dist/
+build/
+**/dist/
+**/build/
+
+# Fichiers de cache
+.cache/
+**/.cache/ 
