@@ -201,12 +201,35 @@ button:disabled {
     gap: 10px;
 }
 
-.working-dir-input {
+.dir-input-container {
+    display: flex;
     flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: monospace;
+    position: relative;
+}
+
+.select-dir-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.select-dir-btn:hover {
+    color: #007bff;
+}
+
+.select-dir-btn svg {
+    display: block;
+}
+
+.working-dir-input {
+    padding-right: 40px;
 }
 
 .validate-dir-btn {
@@ -252,6 +275,58 @@ button:disabled {
 }
 
 .kill-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.tasks-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.complete-all-btn,
+.reset-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s;
+}
+
+.complete-all-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.complete-all-btn:hover {
+    background-color: #218838;
+}
+
+.reset-all-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.reset-all-btn:hover {
+    background-color: #c82333;
+}
+
+.complete-all-btn svg,
+.reset-all-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.complete-all-btn:disabled,
+.reset-all-btn:disabled {
     background-color: #6c757d;
     cursor: not-allowed;
 } 

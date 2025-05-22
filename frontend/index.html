@@ -18,7 +18,14 @@
 
         <div class="input-group">
             <label for="working-dir">Dossier de travail :</label>
-            <input type="text" id="working-dir" placeholder="/chemin/vers/votre/projet" class="working-dir-input">
+            <div class="dir-input-container">
+                <input type="text" id="working-dir" placeholder="/chemin/vers/votre/projet" class="working-dir-input" readonly>
+                <button onclick="selectDirectory()" class="select-dir-btn" title="Sélectionner un dossier">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </button>
+            </div>
             <button onclick="validateWorkingDir()" class="validate-dir-btn">Valider</button>
         </div>
 
@@ -48,6 +55,22 @@
                     <div class="tab" onclick="switchTab('tasks', 'product-owner')">Product Owner</div>
                 </div>
                 <div id="tasks-content"></div>
+                <div class="tasks-actions">
+                    <button onclick="markAllTasksAsCompleted()" class="complete-all-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Marquer toutes les tâches comme terminées
+                    </button>
+                    <button onclick="resetAllTasks()" class="reset-all-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                        Réinitialiser toutes les tâches
+                    </button>
+                </div>
             </div>
         </div>
 

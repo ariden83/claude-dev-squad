@@ -398,4 +398,118 @@ async function killAllClaudeProcesses() {
         console.error('Error:', error);
         addResponseToDisplay('Erreur', error.message, 'error');
     }
+}
+
+async function selectDirectory() {
+    try {
+        // Vérifier si l'API est supportée
+        if (!window.showDirectoryPicker) {
+            throw new Error('La sélection de dossier n\'est pas supportée dans votre navigateur. Veuillez entrer le chemin manuellement.');
+        }
+
+        // Ouvrir le sélecteur de dossier
+        const dirHandle = await window.showDirectoryPicker();
+        
+        // Obtenir le chemin du dossier via une requête au serveur
+        const response = await fetch('/api/get-absolute-path', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                dirName: dirHandle.name,
+                dirHandle: dirHandle
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération du chemin absolu');
+        }
+
+        const data = await response.json();
+        
+        // Mettre à jour le champ de saisie avec le chemin absolu
+        document.getElementById('working-dir').value = data.absolutePath;
+        
+        // Valider automatiquement le dossier
+        await validateWorkingDir();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        if (error.name === 'AbortError') {
+            // L'utilisateur a annulé la sélection
+            return;
+        }
+        addResponseToDisplay('Erreur:', error.message, 'error');
+    }
+}
+
+async function markAllTasksAsCompleted() {
+    if (!currentProjectId) {
+        addResponseToDisplay('Erreur', 'Aucun projet en cours', 'error');
+        return;
+    }
+
+    if (!confirm('Êtes-vous sûr de vouloir marquer toutes les tâches comme terminées ?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/mark-all-tasks-completed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ projectId: currentProjectId })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la mise à jour des tâches');
+        }
+
+        const data = await response.json();
+        addResponseToDisplay('Système', 'Toutes les tâches ont été marquées comme terminées', 'success');
+        
+        // Mettre à jour l'affichage
+        updateProjectStatus();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        addResponseToDisplay('Erreur', error.message, 'error');
+    }
+}
+
+async function resetAllTasks() {
+    if (!currentProjectId) {
+        addResponseToDisplay('Erreur', 'Aucun projet en cours', 'error');
+        return;
+    }
+
+    if (!confirm('Êtes-vous sûr de vouloir réinitialiser toutes les tâches et les mémoires ? Cette action est irréversible.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/reset-all-tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ projectId: currentProjectId })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la réinitialisation des tâches');
+        }
+
+        const data = await response.json();
+        addResponseToDisplay('Système', 'Toutes les tâches et mémoires ont été réinitialisées', 'success');
+        
+        // Mettre à jour l'affichage
+        updateProjectStatus();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        addResponseToDisplay('Erreur', error.message, 'error');
+    }
 } 

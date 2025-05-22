@@ -4,6 +4,7 @@ const { exec } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();
+const logger = require('./logger');
 
 // Vérification de la présence de la clé API
 if (!process.env.ANTHROPIC_API_KEY) {
@@ -15,6 +16,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('../frontend'));
+
+// Middleware de logging
+app.use(logger.http);
 
 // Configuration
 const ROLES = {
@@ -246,24 +250,39 @@ async function validateWorkingDir(workingDir) {
             throw new Error('Le chemin doit être absolu');
         }
 
+        // Nettoyer le chemin (supprimer les points superflus, normaliser les séparateurs)
+        const cleanPath = path.normalize(workingDir);
+
         // Vérifier si le dossier existe
-        const stats = await fs.stat(workingDir);
-        if (!stats.isDirectory()) {
-            throw new Error('Le chemin spécifié n\'est pas un dossier');
+        try {
+            const stats = await fs.stat(cleanPath);
+            if (!stats.isDirectory()) {
+                throw new Error('Le chemin spécifié n\'est pas un dossier');
+            }
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                throw new Error(`Le dossier n'existe pas: ${cleanPath}`);
+            }
+            throw error;
         }
 
         // Vérifier les permissions
         try {
-            await fs.access(workingDir, fs.constants.R_OK | fs.constants.W_OK);
+            await fs.access(cleanPath, fs.constants.R_OK | fs.constants.W_OK);
         } catch (error) {
             throw new Error('Pas de permission de lecture/écriture sur le dossier');
         }
 
         // Vérifier et configurer les permissions Claude
-        await ensureClaudeSettings(workingDir);
+        await ensureClaudeSettings(cleanPath);
 
         return true;
     } catch (error) {
+        logger.error('Erreur de validation du dossier', { 
+            workingDir,
+            error: error.message,
+            code: error.code
+        });
         throw new Error(`Erreur de validation du dossier: ${error.message}`);
     }
 }
@@ -272,6 +291,7 @@ async function validateWorkingDir(workingDir) {
 app.post('/api/validate-working-dir', async (req, res) => {
     try {
         const { workingDir } = req.body;
+        logger.info('Validation du dossier de travail', { workingDir });
         if (!workingDir) {
             return res.status(400).json({ error: 'Dossier de travail non spécifié' });
         }
@@ -279,7 +299,7 @@ app.post('/api/validate-working-dir', async (req, res) => {
         await validateWorkingDir(workingDir);
         res.json({ success: true });
     } catch (error) {
-        console.error('Error validating working directory:', error);
+        logger.error('Erreur lors de la validation du dossier', { error: error.message });
         res.status(400).json({ error: error.message });
     }
 });
@@ -288,6 +308,7 @@ app.post('/api/validate-working-dir', async (req, res) => {
 app.post('/api/prompt', async (req, res) => {
     try {
         const { prompt, workingDir } = req.body;
+        logger.info('Nouvelle demande reçue', { prompt, workingDir });
         if (!prompt) {
             return res.status(400).json({ error: 'Prompt is required' });
         }
@@ -313,7 +334,7 @@ app.post('/api/prompt', async (req, res) => {
             projectId: projectId
         });
     } catch (error) {
-        console.error('Error in /api/prompt:', error);
+        logger.error('Erreur lors du traitement de la demande', { error: error.message });
         res.status(500).json({ error: error.message });
     }
 });
@@ -647,15 +668,56 @@ async function killAllClaudeProcesses() {
 // Endpoint pour arrêter tous les processus Claude
 app.post('/api/kill-claude', async (req, res) => {
     try {
-        const message = await killAllClaudeProcesses();
-        res.json({ success: true, message });
+        logger.info('Arrêt des processus Claude demandé');
+        const result = await killAllClaudeProcesses();
+        logger.info('Processus Claude arrêtés avec succès');
+        res.json({ message: result });
     } catch (error) {
-        console.error('Error killing Claude processes:', error);
+        logger.error('Erreur lors de l\'arrêt des processus', { error: error.message });
         res.status(500).json({ error: error.message });
     }
 });
 
+// Endpoint pour obtenir le chemin absolu d'un dossier
+app.post('/api/get-absolute-path', async (req, res) => {
+    try {
+        const { dirName } = req.body;
+        logger.info('Demande de conversion de chemin', { dirName });
+
+        // Obtenir le chemin absolu du dossier de travail actuel
+        const currentDir = process.cwd();
+        
+        // Construire le chemin absolu en utilisant path.join pour gérer correctement les séparateurs
+        const absolutePath = path.join(currentDir, dirName);
+        
+        // Normaliser le chemin pour gérer les points et les séparateurs
+        const normalizedPath = path.normalize(absolutePath);
+        
+        logger.info('Chemin absolu généré', { 
+            originalPath: dirName,
+            absolutePath: normalizedPath
+        });
+        
+        res.json({ absolutePath: normalizedPath });
+    } catch (error) {
+        logger.error('Erreur lors de la conversion du chemin', { 
+            error: error.message,
+            dirName: req.body.dirName
+        });
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Middleware de gestion des erreurs
+app.use(logger.errorHandler);
+
+// Gestion des erreurs 404
+app.use((req, res, next) => {
+    logger.warn('Route non trouvée', { url: req.url, method: req.method });
+    res.status(404).json({ error: 'Route non trouvée' });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    logger.info(`Serveur démarré sur le port ${PORT}`);
 }); 
