@@ -1,0 +1,257 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.response-container {
+    margin-top: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.response {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.response-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.response-content {
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.response-timestamp {
+    font-size: 0.8em;
+    color: #999;
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #007bff;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+.error {
+    background-color: #fff3f3;
+    border-color: #ffcdd2;
+}
+
+.success {
+    background-color: #f1f8e9;
+    border-color: #c5e1a5;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.project-info {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    display: none;
+}
+
+.project-info.visible {
+    display: block;
+}
+
+.project-status {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.status-section {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-section h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.2em;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+.agent-status {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.agent-status h3 {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 1em;
+}
+
+.agent-content {
+    white-space: pre-wrap;
+    font-size: 0.9em;
+    line-height: 1.4;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab {
+    padding: 8px 15px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-right: 5px;
+    border-radius: 4px 4px 0 0;
+}
+
+.tab.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.working-dir-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.validate-dir-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.validate-dir-btn:hover {
+    background-color: #218838;
+}
+
+.working-dir-status {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.working-dir-status.valid {
+    color: #28a745;
+}
+
+.working-dir-status.invalid {
+    color: #dc3545;
+}
+
+.kill-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+}
+
+.kill-btn:hover {
+    background-color: #c82333;
+}
+
+.kill-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+} 

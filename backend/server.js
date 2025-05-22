@@ -620,6 +620,41 @@ app.post('/api/agent-communication', async (req, res) => {
     }
 });
 
+// Fonction pour arrêter tous les processus Claude
+async function killAllClaudeProcesses() {
+    try {
+        // Sur Linux/Unix
+        const { exec } = require('child_process');
+        return new Promise((resolve, reject) => {
+            exec('pkill -f claude', (error, stdout, stderr) => {
+                if (error) {
+                    // Si pkill retourne une erreur (aucun processus trouvé), ce n'est pas grave
+                    if (error.code === 1) {
+                        resolve('Aucun processus Claude en cours d\'exécution.');
+                    } else {
+                        reject(error);
+                    }
+                } else {
+                    resolve('Processus Claude arrêtés avec succès.');
+                }
+            });
+        });
+    } catch (error) {
+        throw new Error(`Erreur lors de l'arrêt des processus Claude: ${error.message}`);
+    }
+}
+
+// Endpoint pour arrêter tous les processus Claude
+app.post('/api/kill-claude', async (req, res) => {
+    try {
+        const message = await killAllClaudeProcesses();
+        res.json({ success: true, message });
+    } catch (error) {
+        console.error('Error killing Claude processes:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
